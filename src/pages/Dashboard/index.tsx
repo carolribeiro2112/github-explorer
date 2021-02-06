@@ -1,54 +1,71 @@
-import React from 'react';
-import {FiChevronRight} from 'react-icons/fi'
+/* eslint-disable camelcase */
+import React, { useState, FormEvent } from 'react';
+import { FiChevronRight } from 'react-icons/fi';
 
 import api from '../../services/api';
 
 import logoImg from '../../assets/logo-app.svg';
 
-import {Title, Form, Repositories } from './styles';
+import { Title, Form, Repositories } from './styles';
+
+interface Repository {
+  full_name: string;
+  description: string;
+  owner: {
+    login: string;
+    avatar_url: string;
+  };
+}
 
 const Dashboard: React.FC = () => {
+  const [input, setInput] = useState('');
+  const [repositories, setRepositories] = useState<Repository[]>([]);
+
+  async function handleAddRepository(
+    event: FormEvent<HTMLFormElement>,
+  ): Promise<void> {
+    event.preventDefault();
+
+    const response = await api.get<Repository>(`repos/${input}`);
+
+    const repository = response.data;
+
+    setRepositories([...repositories, repository]);
+    setInput('');
+  }
+
   return (
     <>
-      <img src={logoImg} alt="Github Explorer"/>
+      <img src={logoImg} alt="Github Explorer" />
       <Title>Explore repositórios no gitHub.</Title>
 
-      <Form action="">
-        <input type="text" placeholder="Digite Aqui"/>
+      <Form onSubmit={handleAddRepository}>
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          placeholder="Digite Aqui"
+        />
         <button type="submit">Pesquisar</button>
       </Form>
 
       <Repositories>
-        <a href="teste">
-          <img src="https://avatars.githubusercontent.com/u/65139655?s=460&u=5a63f14404df23ed8c72464c08ad22a45f7aa9f4&v=4" alt=""/>
-          <div>
-            <strong>Desafio/CEP</strong>
-            <p>estudo de consumo da api dos correios</p>
-          </div>
+        {repositories.map(repository => (
+          <a key={repository.full_name} href="teste">
+            <img
+              src={repository.owner.avatar_url}
+              alt={repository.owner.login}
+            />
+            <div>
+              <strong>{repository.full_name}</strong>
+              <p>{repository.description}</p>
+            </div>
 
-          <FiChevronRight size={20}/>
-        </a>
-        <a href="teste">
-          <img src="https://avatars.githubusercontent.com/u/65139655?s=460&u=5a63f14404df23ed8c72464c08ad22a45f7aa9f4&v=4" alt=""/>
-          <div>
-            <strong>Desafio/CEP</strong>
-            <p>estudo de consumo da api dos correios</p>
-          </div>
-
-          <FiChevronRight size={20}/>
-        </a>
-        <a href="teste">
-          <img src="https://avatars.githubusercontent.com/u/65139655?s=460&u=5a63f14404df23ed8c72464c08ad22a45f7aa9f4&v=4" alt=""/>
-          <div>
-            <strong>Desafio/CEP</strong>
-            <p>estudo de consumo da api dos correios</p>
-          </div>
-
-          <FiChevronRight size={20}/>
-        </a>
+            <FiChevronRight size={20} />
+          </a>
+        ))}
       </Repositories>
     </>
   );
-}
+};
 
 export default Dashboard;

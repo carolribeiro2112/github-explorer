@@ -1,6 +1,5 @@
-import {createGlobalStyle} from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 import githubBackground from '../assets/logo-github.svg';
- 
 
 export default createGlobalStyle`
   *{
@@ -16,7 +15,7 @@ export default createGlobalStyle`
 
   body, input, button {
     font: 16px Roboto, sans-serif;
-  } 
+  }
 
   #root {
     max-width: 960px;
